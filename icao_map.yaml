@@ -1,0 +1,6 @@
+# List of mappings from meshtastic IDs to fake ICAO addresses for 
+# rendering in tar1090
+# Our instance of tar1090 has a reserved range of A031F8 - A031FF and will 
+# render those ICAOs as truck icons.
+
+"!4dc1acfe": A031F8   # T-echo
