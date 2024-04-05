@@ -4,5 +4,5 @@ using the icao_map.yml file.
 
 Setup: connect meshtastic device to local host via USB
 
-Usage: mesh_receiver.py --host HOST [--port PORT]
+Usage: mesh_receiver.py --host READSB_HOST [--port READSB_PORT]
 
