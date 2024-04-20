@@ -3,4 +3,10 @@
 # Our instance of tar1090 has a reserved range of A031F8 - A031FF and will 
 # render those ICAOs as truck icons.
 
-"!4dc1acfe": A031F8   # T-echo
+# "default" ICAO will be used for unrecognized mesh id's.
+
+"!4dc1acfd": A031F9   # T-echo
+"!da63a7a4": A031FA   # "nib"
+"!da628454": A031FB   # rooftop
+
+"default": A031FC     # used for unrecognized mesh id's

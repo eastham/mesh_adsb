@@ -4,7 +4,7 @@ of two sentences.)
 
 import socket
 import argparse
-from prometheus_client import start_http_server, Counter
+from prometheus_client import Counter
 
 class ReadsbConnection:
     """This class open a socket to readsb and enables sending ADS-B
@@ -67,13 +67,12 @@ class ReadsbConnection:
         """Format and send an ADS-B command to readsb."""
         message = f"*{arg1};\n*{arg2};\n"
         message = message.upper()
-        print(f"message: {message}")
+        # print(f"message: {message}")
 
         fail = self.send_and_retry(message.encode())
         if fail:
             print('failed to send message')
             return -1
-        print('inject complete')
         return 0
 
 if __name__ == '__main__':

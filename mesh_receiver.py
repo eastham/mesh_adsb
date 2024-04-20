@@ -2,7 +2,8 @@
 Subscribe to meshtastic position messages coming in on USB, 
 and inject them into a readsb instance.
 
-TODO: tar1090 display persists for 40s after packet received, too short?
+TODO: 
+tar1090 display persists for 40s after packet received, too short?
 """
 
 import sys
@@ -45,15 +46,17 @@ class MeshReceiver:
 
         self.position_callback_counter.inc()
         if packet.get('fromId'):
-            print(f"*** Position packet from: {packet['fromId']}")
+            print(f" *** Position packet from: {packet['fromId']}")
             if packet['fromId'] in self.icao_dict:
-                print(f"*** ICAO: {self.icao_dict[packet['fromId']]}")
+                print(f" *** ICAO: {self.icao_dict[packet['fromId']]}")
                 icao = int(self.icao_dict[packet['fromId']], 16)
+            else:
+                icao = int(self.icao_dict['default'], 16)
 
         if packet.get('decoded'):
             if packet['decoded'].get('portnum') == 'POSITION_APP':
                 pos = packet['decoded']['position']
-                print(f"*** lat: {pos['latitude']} lng: {pos['longitude']} ",
+                print(f" *** icao {icao} lat: {pos['latitude']} lng: {pos['longitude']} ",
                       f"alt: {pos['altitude']}")
 
                 self.inject_position(icao,
@@ -62,10 +65,14 @@ class MeshReceiver:
                                      pos['altitude'])
                 self.position_decode_counter.inc()
 
-    def on_receive(self, packet, interface):  # pylint: disable=unused-argument
-        """Count all packets for debugging and liveness monitoring."""
+    def on_receive(self, packet, interface):  # pylint: disable=unused-argument"""
+        """Gets called for all packets, including position.
+        Count and print all packets for debugging and liveness monitoring."""
         print(f"** Generic packet from: {packet['fromId']}")
-        print(f"** Packet contents: {packet}")
+        if packet.get('decoded'):
+            decoded = packet['decoded']
+            decoded_only = {x: decoded[x] for x in decoded if x != 'raw'}
+            print(f"** Decoded packet: {decoded_only}")
         self.packet_callback_counter.inc()
 
     def inject_position(self, icao, lat, lon, alt):
@@ -74,12 +81,26 @@ class MeshReceiver:
         self.readsb.inject(res1, res2)
         self.readsb.inject(res1, res2)  # send twice to cause tar1090 rendering
 
+    def build_test_packet(self):
+        """Return a packet with a fake location for testing purposes."""
+        test_pack = {}
+        test_pack['fromId'] = '!cafebabe'
+        test_pack['decoded'] = {}
+        test_pack['decoded']['portnum'] = 'POSITION_APP'
+        test_pos = test_pack['decoded']['position'] = {}
+        test_pos['latitude'] = 40.7859839
+        test_pos['longitude'] = -119.2470743
+        test_pos['altitude'] = 4500
+        return test_pack
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Mesh Receiver.')
-    parser.add_argument('--host', help='The readsb host to connect to.')
+    parser.add_argument('--host', help='The readsb host to connect to.',
+                        required=True)
     parser.add_argument('--port', type=int, default=30001,
                         help='The readsb port to connect to.')
+    parser.add_argument('--test', action='store_true',
+                        help='Inject a fake packet every 10s')
 
     args = parser.parse_args()
     start_http_server(PROM_PORT)     # prometheus metrics
@@ -91,7 +112,10 @@ if __name__ == '__main__':
     try:
         iface = meshtastic.serial_interface.SerialInterface()
         while True:
-            time.sleep(1000)
+            if args.test:
+                test_packet = mesh_receiver.build_test_packet()
+                mesh_receiver.on_position_receive(test_packet, None)
+            time.sleep(10)
         iface.close()
     except Exception as ex:  # pylint: disable=broad-except
         print(f"Error: Connection problem: {ex}")
