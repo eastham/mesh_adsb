@@ -34,7 +34,9 @@ class MeshReceiver:
             'position_decode', 'Number of position decodes')
         self.packet_callback_counter = Counter(
             'packet_callback', 'All packets received')
-
+        self.reconnect_counter = Counter(
+            'reconnect', 'Number of reconnections')
+        
         with open(icao_yaml_file, 'r') as file:
             self.icao_dict = yaml.safe_load(file)
 
@@ -115,6 +117,10 @@ if __name__ == '__main__':
             if args.test:
                 test_packet = mesh_receiver.build_test_packet()
                 mesh_receiver.on_position_receive(test_packet, None)
+            if not hasattr(iface, "stream") or not iface.stream:
+                print("Attempting reconnect to meshtastic")
+                mesh_receiver.reconnect_counter.inc()
+                iface = meshtastic.serial_interface.SerialInterface()
             time.sleep(10)
         iface.close()
     except Exception as ex:  # pylint: disable=broad-except
