@@ -1,4 +1,4 @@
-Purpose: receive meshtastic position reports and push them into a readsb ads-b instance, with 
+Purpose: receive meshtastic position reports over serial/USB and push them into a readsb ads-b TCP port, with 
 the intention that they be rendered via tar1090.  Meshtastic IDs are mapped to ICAO addresses
 using the icao_map.yml file.
 
