@@ -11,10 +11,6 @@ prometheus_client==0.20.0
 protobuf==5.26.1
 ptyprocess==0.7.0
 pubsub==0.1.2
-pyobjc-core==9.2
-pyobjc-framework-Cocoa==9.2
-pyobjc-framework-CoreBluetooth==9.2
-pyobjc-framework-libdispatch==9.2
 Pypubsub==4.0.3
 PyQRCode==1.2.1
 pyserial==3.5
