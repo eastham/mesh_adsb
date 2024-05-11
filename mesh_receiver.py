@@ -106,13 +106,15 @@ if __name__ == '__main__':
                         help='The readsb port to connect to.')
     parser.add_argument('--test', action='store_true',
                         help='Inject a fake packet every 10s')
+    parser.add_argument('--path', help='Path to icao_map.yaml',
+                        default='icao_map.yaml')
 
     args = parser.parse_args()
     start_http_server(PROM_PORT)     # prometheus metrics
 
     print("running")
 
-    mesh_receiver = MeshReceiver(args.host, args.port, 'icao_map.yaml')
+    mesh_receiver = MeshReceiver(args.host, args.port, args.path)
 
     try:
         iface = meshtastic.serial_interface.SerialInterface()
