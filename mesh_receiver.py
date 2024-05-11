@@ -55,12 +55,19 @@ class MeshReceiver:
             elif 'default' in self.icao_dict:
                 icao = int(self.icao_dict['default'], 16)
             else:
-                print(" *** No ICAO found for this ID " + packet['fromId'])
+                print(" *** No ICAO mapping found for this ID " + 
+                      packet['fromId'])
                 return
+        else:
+            print(" *** No fromId in packet")
+            return
 
         if packet.get('decoded'):
             if packet['decoded'].get('portnum') == 'POSITION_APP':
                 pos = packet['decoded']['position']
+                if not pos.get('latitude') or not pos.get('longitude'):
+                    print(" *** No lat or long in position packet")
+                    return
                 if pos.get('altitude') is None:
                     alt = self.icao_dict['default_alt']
                 else:

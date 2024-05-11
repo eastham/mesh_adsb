@@ -6,7 +6,7 @@
 # "default" ICAO will be used for unrecognized mesh id's.
 
 "!4dc1acfd": A031F8   # T-echo HP
-"!43563b18": A031F9   # crew
+"!43563b18": A031F9   # airport_crew
 "!33677aa0": A031FA   # airport_1
 "!da63a7a4": A031FB   # airport_2
 "!33677aec": A031FC   # airport_3
