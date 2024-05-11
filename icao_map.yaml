@@ -15,3 +15,4 @@
 # comment this line out if you don't want to render all
 # unknown IDs
 #"default": A031FF     # used for unrecognized mesh id's
+"default_alt": 3900  # altitude to use if not specified in the packet

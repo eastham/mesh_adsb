@@ -61,13 +61,17 @@ class MeshReceiver:
         if packet.get('decoded'):
             if packet['decoded'].get('portnum') == 'POSITION_APP':
                 pos = packet['decoded']['position']
+                if pos.get('altitude') is None:
+                    alt = self.icao_dict['default_alt']
+                else:
+                    alt = pos['altitude']
                 print(f" *** icao {icao} lat: {pos['latitude']} lng: {pos['longitude']} ",
-                      f"alt: {pos['altitude']}")
+                      f"alt: {alt}")
 
                 self.inject_position(icao,
                                      pos['latitude'],
                                      pos['longitude'],
-                                     pos['altitude'])
+                                     alt)
                 self.position_decode_counter.inc()
 
     def on_receive(self, packet, interface):  # pylint: disable=unused-argument"""
