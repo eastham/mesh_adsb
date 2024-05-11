@@ -52,8 +52,11 @@ class MeshReceiver:
             if packet['fromId'] in self.icao_dict:
                 print(f" *** ICAO: {self.icao_dict[packet['fromId']]}")
                 icao = int(self.icao_dict[packet['fromId']], 16)
-            else:
+            elif 'default' in self.icao_dict:
                 icao = int(self.icao_dict['default'], 16)
+            else:
+                print(" *** No ICAO found for this ID " + packet['fromId'])
+                return
 
         if packet.get('decoded'):
             if packet['decoded'].get('portnum') == 'POSITION_APP':

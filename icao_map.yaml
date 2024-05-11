@@ -6,10 +6,12 @@
 # "default" ICAO will be used for unrecognized mesh id's.
 
 "!4dc1acfd": A031F8   # T-echo
-"!33677aa0": A031F9	      # truck1
+"!33677aa0": A031F9   # truck1
 "!da63a7a4": A031FA   # truck2
 "!33677aec": A031FB   # truck3
-"!43563b18": A031FC      # crew
-"!da628454": A031FF   # rooftop
+"!43563b18": A031FC   # crew
+"!da628454": A031FF   # rooftop no gps
 
-"default": A031FF     # used for unrecognized mesh id's
+# comment this line out if you don't want to render all
+# unknown IDs
+#"default": A031FF     # used for unrecognized mesh id's
