@@ -35,8 +35,14 @@ class MeshReceiver:
         self.packet_callback_counter = Counter(
             'packet_callback', 'All packets received')
         self.reconnect_counter = Counter(
-            'reconnect', 'Number of reconnections')
-        
+            'reconnect', 'Number of reconnections to meshtastic device')
+        self.xmit_fail_counter = Counter(
+            'xmit_fail', 'Number of failed sends to readsb')
+        self.known_trackers_counter = Counter(
+            'known_trackers', 'Recognized devices seen', ['icao', 'name'])
+        self.all_trackers_counter = Counter(
+            'all_trackers', 'All devices seen', ['meshtastic_id'])
+
         with open(icao_yaml_file, 'r') as file:
             self.icao_dict = yaml.safe_load(file)
 
@@ -49,13 +55,19 @@ class MeshReceiver:
         self.position_callback_counter.inc()
         if packet.get('fromId'):
             print(f" *** Position packet from: {packet['fromId']}")
+            self.all_trackers_counter.labels(meshtastic_id=packet['fromId']).inc()
+
             if packet['fromId'] in self.icao_dict:
                 print(f" *** ICAO: {self.icao_dict[packet['fromId']]}")
                 icao = int(self.icao_dict[packet['fromId']], 16)
+                familiar_name = self.icao_dict.get(hex(icao))
+                print(f" *** Familiar name: {hex(icao)} {familiar_name}")
+                self.known_trackers_counter.labels(icao=icao,
+                                                    name=familiar_name).inc()
             elif 'default' in self.icao_dict:
                 icao = int(self.icao_dict['default'], 16)
             else:
-                print(" *** No ICAO mapping found for this ID " + 
+                print(" *** No ICAO mapping found for this ID " +
                       packet['fromId'])
                 return
         else:
@@ -93,9 +105,13 @@ class MeshReceiver:
 
     def inject_position(self, icao, lat, lon, alt):
         """Inject a position into readsb."""
-        res1, res2 = ADSB_Encoder.encode(icao, lat, lon, alt)
-        self.readsb.inject(res1, res2)
-        self.readsb.inject(res1, res2)  # send twice to cause tar1090 rendering
+        sentence1, sentence2 = ADSB_Encoder.encode(icao, lat, lon, alt)
+        ret1 = self.readsb.inject(sentence1, sentence2)
+        ret2 = self.readsb.inject(sentence1, sentence2)  # send twice to cause tar1090 rendering
+        if ret1 + ret2:
+            self.xmit_fail_counter.inc()
+            print("Failed to send position to readsb")
+        return ret1 + ret2
 
     def build_test_packet(self):
         """Return a packet with a fake location for testing purposes."""
