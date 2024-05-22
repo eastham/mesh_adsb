@@ -84,6 +84,9 @@ class MeshReceiver:
                     alt = self.icao_dict['default_alt']
                 else:
                     alt = pos['altitude']
+
+                # incoming alt in meters, convert to feet
+                alt = int(alt * 3.28084)
                 print(f" *** icao {icao} lat: {pos['latitude']} lng: {pos['longitude']} ",
                       f"alt: {alt}")
 
