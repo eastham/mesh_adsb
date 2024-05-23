@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 This module provides classes for sharing and receiving location data over UDP.
+Wire format is JSON.  See the __main__ block for example usage.
 
 There are also some command-line capabilities...
 To send a test location to port 8869, then exit:
@@ -137,8 +138,8 @@ if __name__ == "__main__":
                         help='Port to send the test location to.')
     args = parser.parse_args()
 
+    # Send a test location and exit
     if args.send_test_ip:
-        # Send a test location
         sender = LocationSender(args.send_test_ip, args.send_test_port)
         ts = int(time.time())
         test_loc = LocationShare(40.8678983, -119.3353406, 4000, ts,
