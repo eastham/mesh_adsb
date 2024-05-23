@@ -1,0 +1,37 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+          "name": "mesh receive + test",
+          "type": "debugpy",
+          "request": "launch",
+          "program": "mesh_receiver.py",
+          "console": "integratedTerminal",
+          //"args": "--host=192.168.87.28 --test"
+          "args": "--host=192.168.87.28 --share_output_ip=localhost --share_output_port=6666 --share_input_port=8869"
+          //"args": "--host=192.168.87.23"
+        }, 
+
+       {
+          "name": "position share receiver",
+          "type": "debugpy",
+          "request": "launch",
+          "program": "location_share.py",
+          "console": "integratedTerminal",
+          "args": ""
+          //"args": "--host=192.168.87.23"
+        },
+        {
+          "name": "position share send test",
+          "type": "debugpy",
+          "request": "launch",
+          "program": "location_share.py",
+          "console": "integratedTerminal",
+          "args": "--send_test_ip=localhost --send_test_port=8869"
+          //"args": "--host=192.168.87.23"
+        }
+    ]
+}
