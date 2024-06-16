@@ -13,8 +13,13 @@
 "!da63a7a4": ADF803   # airport_2
 "!33677aec": ADF804   # airport_3
 "!unassigned": ADF805 # airport_4 
-"!da628454": ADF809  # tower, no gps  "airport base" # XXX remove?
+"!33676d00": ADF806   # home rooftop
+"!da628bcc": ADF808   # tower interior
+"!da628454": ADF809   # tower exterior
+"!43572234": ADF80A   # 0A-13 are non-adsb-aircraft
+                      # (above 13 are other types of objects)
 # da628bcc = tower
+
 
 # these human-readable aliases from ICAO are used for logging /debugging purposes
 '0xadf800': "airport_HP"   

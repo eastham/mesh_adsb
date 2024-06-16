@@ -42,8 +42,8 @@ class MeshReceiver:
             'packet_callback', 'All packets received')
         self.reconnect_counter = Counter(
             'reconnect', 'Number of reconnections to meshtastic device')
-        self.xmit_fail_counter = Counter(
-            'xmit_fail', 'Number of failed sends to readsb')
+        self.inject_fail_counter = Counter(
+            'inject_fail', 'Number of failed sends to readsb')
         self.known_trackers_counter = Counter(
             'known_trackers', 'Recognized devices seen', ['icao', 'name'])
         self.all_trackers_counter = Counter(
@@ -111,8 +111,9 @@ class MeshReceiver:
             return ("UNKNOWN", 0)
 
     def handle_position_packet(self, packet, share: bool):
-        """Inject the position into readsb, and also send it to
-        location share if we have one."""
+        """Inject the position packet into readsb, and also send it to
+        location share if we have one.
+        share: True if we should also share the location over the internet."""
 
         icao = self.get_icao_for_packet(packet)
         if not icao:
@@ -147,7 +148,8 @@ class MeshReceiver:
         # Send position to ADS-B stream
         self.inject_position(icao, pos['latitude'], pos['longitude'], alt)
 
-        # Send position to others over the internet
+        # If we're sharing, send position to others over the internet.
+        # Assuming the "share" flag is set, which is used to prevent loopbacks.
         if share and self.location_sender:
             self.send_to_location_share(pos, alt, familiar_name, unit_no)
 
@@ -184,7 +186,7 @@ class MeshReceiver:
         ret1 = self.readsb.inject(sentence1, sentence2)
         ret2 = self.readsb.inject(sentence1, sentence2)  # send twice to force tar1090 rendering
         if ret1 + ret2:
-            self.xmit_fail_counter.inc()
+            self.inject_fail_counter.inc()
             print("Failed to send position to readsb")
         return ret1 + ret2
 
@@ -201,7 +203,8 @@ class MeshReceiver:
         return test_pack
 
     def build_packet_from_shared_location(self, loc: LocationShare):
-        """Return a packet with a location based on the LocationShare position."""
+        """Return a Meshtastic-style packet containing a location,
+        based on the LocationShare position."""
 
         pack = {}
 
