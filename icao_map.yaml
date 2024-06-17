@@ -17,7 +17,7 @@
 "!unassigned2": ADF807 # unassigned
 #"!da628bcc": ADF808   # tower interior
 #"!da628454": ADF809   # tower exterior
-"!43572234": ADF80A   # 0A-13 are non-adsb aircraft
+"!43572234": ADF80A   # 0A-13 are non-adsb aircraft: "NONADSB_1"
                       # (above 13 are other types of objects)
 # da628bcc = tower
 
@@ -32,5 +32,5 @@
 '0xadf809': "airport tower"
 
 # comment this line out if you don't want to render all unknown IDs
-"default": ADF8FF     # used for unrecognized mesh id's
+#"default": ADF8FF     # used for unrecognized mesh id's
 "default_alt": 3900   # altitude MSL to use if not specified in the packet
