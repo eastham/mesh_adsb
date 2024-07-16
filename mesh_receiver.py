@@ -77,20 +77,19 @@ class MeshReceiver:
             return None
         from_id = packet['fromId']
 
-        print(f" *** Translating packet from: {from_id}")
         self.all_trackers_counter.labels(id=from_id).inc()
 
         if from_id[0] != '!':
             # Non-meshtastic ID, just use it as-is. (from test or share)
             icao = int(from_id, 16)
-            print(f" *** Non-meshtastic ID: {hex(icao)}")
+            print(f" *** Non-meshtastic ID: {from_id}, using as-is ICAO: {hex(icao)}")
         elif from_id in self.icao_dict:
             # Translate from meshtastic ID to our ICAO space
             icao = int(self.icao_dict[from_id], 16)
-            print(f" *** Got ICAO from yaml: {hex(icao)}")
+            print(f" *** Got ICAO from yaml for ID: {from_id}, ICAO: {hex(icao)}")
         elif 'default' in self.icao_dict:
             icao = int(self.icao_dict['default'], 16)
-            print(f" *** Using default ICAO: {hex(icao)}")
+            print(f" *** Using default ICAO for ID: {from_id}, ICAO: {hex(icao)}")
         else:
             print(" *** No ICAO mapping found for this ID: " +
                     from_id + ", not sending")
@@ -117,7 +116,7 @@ class MeshReceiver:
 
         icao = self.get_icao_for_packet(packet)
         if not icao:
-            print(" *** No fromId in packet, not sending")
+            # print(" *** No fromId in packet, not sending")
             return
         (familiar_name, unit_no) = self.get_names_for_packet(packet, icao)
 
@@ -173,10 +172,10 @@ class MeshReceiver:
         Count and print all packets for debugging and liveness monitoring."""
 
         print(f"** FYI, generic packet from: {packet['fromId']}")
-        if packet.get('decoded'):
-            decoded = packet['decoded']
-            decoded_only = {x: decoded[x] for x in decoded if x != 'raw'}
-            print(f"** Decoded packet: {decoded_only}")
+        #if packet.get('decoded'):
+        #    decoded = packet['decoded']
+        #    decoded_only = {x: decoded[x] for x in decoded if x != 'raw'}
+        #    print(f"** Decoded packet: {decoded_only}")
         self.packet_callback_counter.inc()
 
     def inject_position(self, icao, lat, lon, alt):
