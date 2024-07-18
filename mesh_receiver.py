@@ -75,7 +75,7 @@ class MeshReceiver:
         pub.subscribe(self.on_receive, "meshtastic.receive")
 
     def on_position_receive(self, packet, interface):  # pylint: disable=unused-argument
-        """Called when a position packet arrives from meshtastic."""
+        """Callback for when a position packet arrives from meshtastic."""
 
         self.position_callback_counter.inc()
         self.handle_position_packet(packet, True)
@@ -123,9 +123,9 @@ class MeshReceiver:
             return ("UNKNOWN", 0)
 
     def handle_position_packet(self, packet, share: bool):
-        """Inject the position packet into readsb, and also send it to
-        location share if we have one.
-        share: True if we should also share the location over the internet."""
+        """We received a position packet, either from the mesh or internet.
+        Inject the position packet into readsb, and also send it to
+        the internet location share if "share" is True."""
 
         icao = self.get_icao_for_packet(packet)
         if not icao:

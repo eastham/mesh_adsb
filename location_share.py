@@ -15,17 +15,18 @@ import socket
 import sys
 import time
 import json
+import logging
 
 class LocationShare:
     """
-    Container to represent a single shared location observation.
+    Object representing a single shared location observation.
 
     lat: Latitude in decimal degrees
     lon: Longitude in decimal degrees
     alt_ft_msl: Altitude in feet MSL
     timestamp: Unix timestamp in seconds UTC, when the location was recorded
     department: string - organization name
-    unit_no: int - Unit number, unique per department
+    unit_no: int - Unit/vehicle/target number, ideally unique per department
     name: string - Human-readable name of the object being tracked, if available
     """
 
@@ -50,7 +51,7 @@ class LocationShare:
         try:
             loc = cls(**location_dict)
         except (KeyError, TypeError) as e:
-            print(f"Error creating LocationShare object: {e}")
+            logging.error(f"Error creating LocationShare object: {e}")
 
         return loc
 
@@ -78,13 +79,13 @@ class LocationSender:
             location_json = loc.to_json()
             location_bytes = location_json.encode()
         except Exception as e:      # pylint: disable=broad-except
-            print(f"Error encoding location data: {e}")
+            logging.error(f"Error encoding location data: {e}")
             return -1
 
         try:
             self.sock.sendto(location_bytes, (self.ip, self.port))
         except Exception as e:      # pylint: disable=broad-except
-            print(f"Error sending location data: {e}")
+            logging.error(f"Error sending location data: {e}")
             return -1
 
         return 0
@@ -115,9 +116,9 @@ class LocationReceiver:
             location_bytes, address = self.sock.recvfrom(RECV_LEN)
 
             if len(location_bytes) >= RECV_LEN:
-                print(f"Warning: Received data len >= {RECV_LEN} bytes")
+                logging.warning(f"Received data len >= {RECV_LEN} bytes")
             if self.ip_whitelist and address[0] not in self.ip_whitelist:
-                print("Received data from unauthorized address: " + address[0])
+                logging.error("Received data from unauthorized address: " + address[0])
                 return None
 
             location_json = location_bytes.decode()
@@ -125,7 +126,7 @@ class LocationReceiver:
             loc = LocationShare.from_dict(location_dict)
             return loc
         except Exception as e:      # pylint: disable=broad-except
-            print(f"Error receiving shared location: {e}")
+            logging.error(f"Error receiving shared location: {e}")
             return None
 
 if __name__ == "__main__":
