@@ -25,7 +25,7 @@ from location_share import LocationReceiver, LocationSender, LocationShare
 
 PROM_PORT = 9091
 
-log_level = logging.DEBUG
+log_level = logging.INFO
 logging.basicConfig(
     level=log_level,
     format='%(asctime)s %(levelname)s adsb_actions %(module)s:%(lineno)d: %(message)s',
@@ -92,7 +92,7 @@ class MeshReceiver:
         if from_id[0] != '!':
             # Non-meshtastic ID, just use it as-is. (from test or share)
             icao = int(from_id, 16)
-            logging.debug(
+            logging.info(
                 f" *** Non-meshtastic ID: {from_id}, using as-is ICAO: {hex(icao)}")
         elif from_id in self.icao_dict:
             # Translate from meshtastic ID to our ICAO space
@@ -179,7 +179,7 @@ class MeshReceiver:
             logging.warning("Error sharing location data to internet")
             self.shared_locations_out_error_counter.inc()
         else:
-            logging.debug(f"Shared location to internet: {locshare.to_json()}")
+            logging.info(f"Shared location to internet: {locshare.to_json()}")
             self.shared_locations_out_counter.inc()
 
     def on_receive(self, packet, interface):  # pylint: disable=unused-argument
@@ -263,7 +263,7 @@ class LocationShareInputThread:     # pylint: disable=too-few-public-methods
         while True:
             loc = self.location_receiver.receive_location()     # blocks
             if loc:
-                logging.debug(f"Received shared location: {loc.to_json()}")
+                logging.info(f"Received shared location: {loc.to_json()}")
                 self.shared_location_q.put(loc)
                 self.shared_locations_in_counter.inc()
             else:
