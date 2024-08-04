@@ -48,9 +48,9 @@ class MeshReceiver:
         self.position_callback_counter = Counter(
             'position_callback', 'Number of position callbacks')
         self.position_mesh_inject_counter = Counter(
-            'position_decode', 'Number of position injections from mesh')
+            'mesh_inject_counter', 'Number of position injections from mesh')
         self.position_internet_inject_counter = Counter(
-            'position_decode', 'Number of position injections from internet')
+            'internet_inject_counter', 'Number of position injections from internet')
         self.packet_callback_counter = Counter(
             'packet_callback', 'All packets received')
         self.reconnect_counter = Counter(
