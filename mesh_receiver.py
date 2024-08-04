@@ -252,7 +252,7 @@ class LocationShareInputThread:     # pylint: disable=too-few-public-methods
     def __init__(self, port: int, shared_location_q: Queue):
         if not port:
             return
-        self.location_receiver = LocationReceiver("localhost", port)
+        self.location_receiver = LocationReceiver("0.0.0.0", port)
         self.shared_location_q = shared_location_q
 
         self.shared_locations_in_counter = Counter(
