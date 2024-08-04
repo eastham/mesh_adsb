@@ -156,11 +156,11 @@ class MeshReceiver:
         else:
             alt = int(pos['altitude'] * 3.28084) # meters to feet
 
-        # We have a good position
+        # We have a good position that we will inject.  Update stats
         if share:
-            self.position_internet_inject_counter.inc()
-        else:
             self.position_mesh_inject_counter.inc()
+        else:
+            self.position_internet_inject_counter.inc()
         logging.info(
             f" *** injecting icao {icao} lat: {pos['latitude']} lng: "
             f"{pos['longitude']} alt: {alt}")
