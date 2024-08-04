@@ -131,7 +131,7 @@ class LocationReceiver:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Location Share')
-    parser.add_argument('--port', type=int, default=6666,
+    parser.add_argument('--port', type=int, default=8869,
                         help='The port to listen on.')
     parser.add_argument('--send_test_ip', type=str, default=None,
                         help='Send a test location to the given ip, then exit')
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         sender = LocationSender(args.send_test_ip, args.send_test_port)
         ts = int(time.time())
         test_loc = LocationShare(40.8678983, -119.3353406, 4000, ts,
-                                 "AIRPORT_TEST", 1, "Airport Truck #1")
+                                 "AIRPORT_TEST", 2, "Airport Truck #1")
         sender.send_location(test_loc)
         print(f"Sent test location to {args.send_test_ip}, exiting: ",
               f"{test_loc.to_json()}")
@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
     # Listen for data and print it to stdout
     print(f"Listening for shared locations on port {args.port}")
-    receiver = LocationReceiver("localhost", args.port, None)
+    receiver = LocationReceiver("0.0.0.0", args.port, None)
     while True:
         received_loc = receiver.receive_location()
         if received_loc is not None:

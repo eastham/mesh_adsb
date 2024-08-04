@@ -30,7 +30,8 @@
           "request": "launch",
           "program": "location_share.py",
           "console": "integratedTerminal",
-          "args": "--send_test_ip=localhost --send_test_port=6666"
+          //"args": "--send_test_ip=192.168.87.45 --send_test_port=8869"
+          "args": "--send_test_ip=localhost --send_test_port=8869"
           //"args": "--host=192.168.87.23"
         }
     ]
