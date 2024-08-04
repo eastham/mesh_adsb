@@ -29,6 +29,7 @@ log_level = logging.INFO
 logging.basicConfig(
     level=log_level,
     format='%(asctime)s %(levelname)s adsb_actions %(module)s:%(lineno)d: %(message)s',
+    datefmt='%Y-%m-%dT%H:%M:%S',
     handlers=[
         logging.StreamHandler(),
         logging.handlers.SysLogHandler()
@@ -46,8 +47,10 @@ class MeshReceiver:
         self.readsb = inject_adsb.ReadsbConnection(host, port)
         self.position_callback_counter = Counter(
             'position_callback', 'Number of position callbacks')
-        self.position_decode_counter = Counter(
-            'position_decode', 'Number of position decodes')
+        self.position_mesh_inject_counter = Counter(
+            'position_decode', 'Number of position injections from mesh')
+        self.position_internet_inject_counter = Counter(
+            'position_decode', 'Number of position injections from internet')
         self.packet_callback_counter = Counter(
             'packet_callback', 'All packets received')
         self.reconnect_counter = Counter(
@@ -154,7 +157,10 @@ class MeshReceiver:
             alt = int(pos['altitude'] * 3.28084) # meters to feet
 
         # We have a good position
-        self.position_decode_counter.inc()
+        if share:
+            self.position_internet_inject_counter.inc()
+        else:
+            self.position_mesh_inject_counter.inc()
         logging.info(
             f" *** injecting icao {icao} lat: {pos['latitude']} lng: "
             f"{pos['longitude']} alt: {alt}")
