@@ -17,7 +17,7 @@ import yaml
 from pubsub import pub
 import meshtastic
 import meshtastic.serial_interface
-from prometheus_client import start_http_server, Counter
+from prometheus_client import start_http_server, Counter, Gauge
 
 import ADSB_Encoder
 import inject_adsb
@@ -65,6 +65,8 @@ class MeshReceiver:
             'shared_locs_out', 'Shared locations sent to internet')
         self.shared_locations_out_error_counter = Counter(
             'shared_locs_out_error', 'Shared location send errors')
+        self.tracker_time_last_seen = Gauge(
+            'tracker_time_last_seen', 'Last time a tracker was seen', ['name'])
 
         with open(icao_yaml_file, 'r', encoding='utf-8') as file:
             self.icao_dict = yaml.safe_load(file)
@@ -157,6 +159,7 @@ class MeshReceiver:
             alt = int(pos['altitude'] * 3.28084) # meters to feet
 
         # We have a good position that we will inject.  Update stats
+        self.tracker_time_last_seen.labels(name=familiar_name).set_to_current_time()
         if share:
             self.position_mesh_inject_counter.inc()
         else:
