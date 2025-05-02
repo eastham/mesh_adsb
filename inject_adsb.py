@@ -21,7 +21,10 @@ class ReadsbConnection:
         self.send_error_counter = Counter('send_error',
                                           'Number of send errors')
 
-        self.connect()
+        if host:
+            self.connect()
+        else:
+            print('No host specified, skipping connection')
 
     def connect(self):
         """Open connection, return 0 on success, -1 on failure."""

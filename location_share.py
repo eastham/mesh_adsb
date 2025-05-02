@@ -144,7 +144,7 @@ if __name__ == "__main__":
         sender = LocationSender(args.send_test_ip, args.send_test_port)
         ts = int(time.time())
         test_loc = LocationShare(40.8678983, -119.3353406, 4000, ts,
-                                 "AIRPORT_TEST", 2, "Airport Truck #1")
+                                 "AIRPORT_TEST", 2, "Airport Truck #3")
         sender.send_location(test_loc)
         print(f"Sent test location to {args.send_test_ip}, exiting: ",
               f"{test_loc.to_json()}")
