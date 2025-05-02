@@ -12,7 +12,9 @@
 "!33677aa0": ADF802   # airport_1
 "!da63a7a4": ADF803   # airport_2
 "!33677aec": ADF804   # airport_3
-"!unassigned": ADF805 # airport_4 
+"!fbe6433c": ADF805   # airport_4 
+"!5bf6d0f0": ADF806   # airport_5
+"!365aed45": ADF807   # airport_6
 #"!33676d00": ADF806   # home rooftop
 "!unassigned2": ADF807 # unassigned
 #"!da628bcc": ADF808   # tower interior
@@ -29,6 +31,9 @@
 '0xadf803': "airport_2"
 '0xadf804': "airport_3"
 '0xadf805': "airport_4"
+'0xadf806': "airport_5"
+'0xadf807': "airport_6"
+
 '0xadf809': "airport tower"
 '0xadf80a': "aircraft_1"
 
