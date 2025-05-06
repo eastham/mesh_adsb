@@ -22,7 +22,9 @@ from prometheus_client import start_http_server, Counter, Gauge
 import ADSB_Encoder
 import inject_adsb
 from location_share import LocationReceiver, LocationSender, LocationShare
+from tracker_stats import TrackerQueue, TrackerStatus
 
+TRACKER_STATS_FILE = "tracker_stats.json"
 PROM_PORT = 9091
 
 log_level = logging.INFO
@@ -67,6 +69,8 @@ class MeshReceiver:
             'shared_locs_out_error', 'Shared location send errors')
         self.tracker_time_last_seen = Gauge(
             'tracker_time_last_seen', 'Last time a tracker was seen', ['name'])
+
+        self.tracker_queue = TrackerQueue(100)
 
         with open(icao_yaml_file, 'r', encoding='utf-8') as file:
             self.icao_dict = yaml.safe_load(file)
@@ -159,6 +163,11 @@ class MeshReceiver:
             alt = int(pos['altitude'] * 3.28084) # meters to feet
 
         # We have a good position that we will inject.  Update stats
+        self.tracker_queue.add_tracker(TrackerStatus(str(hex(icao)),
+                                                     familiar_name,
+                                                     time.time(),
+                                                     not share))
+        self.tracker_queue.save_to_file(TRACKER_STATS_FILE)
         self.tracker_time_last_seen.labels(name=familiar_name).set_to_current_time()
         if share:
             self.position_mesh_inject_counter.inc()
