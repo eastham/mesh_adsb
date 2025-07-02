@@ -51,7 +51,7 @@ class ReadsbConnection:
         self.send_counter.inc()
         try:
             self.sock.send(message)
-            logger.info('sent readsb message')
+            logger.debug('sent readsb message')
         except Exception as e:    # pylint: disable=broad-except
             self.send_error_counter.inc()
             logger.info(f'Error sending readsb message: {e}')

@@ -172,7 +172,7 @@ class MeshReceiver:
         else:
             self.position_internet_inject_counter.inc()
         logger.info(
-            f" *** injecting icao {icao} lat: {pos['latitude']} lng: "
+            f" *** injecting icao {hex(icao)} lat: {pos['latitude']} lng: "
             f"{pos['longitude']} alt: {alt}")
 
         # Send position to ADS-B stream
