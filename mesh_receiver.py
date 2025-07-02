@@ -33,8 +33,10 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s adsb_actions %(module)s:%(lineno)d: %(message)s',
     datefmt='%Y-%m-%dT%H:%M:%S',
     handlers=[
-        logging.StreamHandler()
+        logging.StreamHandler(),
+        logging.handlers.SysLogHandler()
     ])
+logger = logging.getLogger(__name__)
 
 class MeshReceiver:
     """Subscribe to meshtastic position messages coming in on USB,
@@ -100,19 +102,19 @@ class MeshReceiver:
         if from_id[0] != '!':
             # Non-meshtastic ID, just use it as-is. (from test or share)
             icao = int(from_id, 16)
-            logging.info(
+            logger.info(
                 f" *** Non-meshtastic ID: {from_id}, using as-is ICAO: {hex(icao)}")
         elif from_id in self.icao_dict:
             # Translate from meshtastic ID to our ICAO space
             icao = int(self.icao_dict[from_id], 16)
-            logging.debug(
+            logger.debug(
                 f" *** Got ICAO from yaml for ID: {from_id}, ICAO: {hex(icao)}")
         elif 'default' in self.icao_dict:
             icao = int(self.icao_dict['default'], 16)
-            logging.debug(
+            logger.debug(
                 f" *** Using default ICAO for ID: {from_id}, ICAO: {hex(icao)}")
         else:
-            logging.debug(" *** No ICAO mapping found for this ID: " +
+            logger.debug(" *** No ICAO mapping found for this ID: " +
                     from_id + ", not sending")
             return None
         return icao
@@ -137,11 +139,11 @@ class MeshReceiver:
 
         icao = self.get_icao_for_packet(packet)
         if not icao:
-            # logging.debug(" *** No fromId in packet, not sending")
+            # logger.debug(" *** No fromId in packet, not sending")
             return
         (familiar_name, unit_no) = self.get_names_for_packet(packet, icao)
 
-        logging.debug(
+        logger.debug(
             f" *** Translated packet names: {hex(icao)}->{familiar_name} unit {unit_no}")
         self.known_trackers_counter.labels(icao=icao,
                                            name=familiar_name).inc()
@@ -149,11 +151,11 @@ class MeshReceiver:
         # Sanity checks, these do sometimes occur
         if (not packet.get('decoded') or
             packet['decoded'].get('portnum') != 'POSITION_APP'):
-            logging.debug(" *** Not a position packet, not sending")
+            logger.debug(" *** Not a position packet, not sending")
             return
         pos = packet['decoded']['position']
         if not pos.get('latitude') or not pos.get('longitude'):
-            logging.warning(" *** No lat or long in position packet")
+            logger.warning(" *** No lat or long in position packet")
             return
 
         if pos.get('altitude') is None:
@@ -172,7 +174,7 @@ class MeshReceiver:
             self.position_mesh_inject_counter.inc()
         else:
             self.position_internet_inject_counter.inc()
-        logging.info(
+        logger.info(
             f" *** injecting icao {icao} lat: {pos['latitude']} lng: "
             f"{pos['longitude']} alt: {alt}")
 
@@ -193,21 +195,21 @@ class MeshReceiver:
                                  familiar_name)
         result = self.location_sender.send_location(locshare)
         if result:
-            logging.warning("Error sharing location data to internet")
+            logger.warning("Error sharing location data to internet")
             self.shared_locations_out_error_counter.inc()
         else:
-            logging.info(f"Shared location to internet: {locshare.to_json()}")
+            logger.info(f"Shared location to internet: {locshare.to_json()}")
             self.shared_locations_out_counter.inc()
 
     def on_receive(self, packet, interface):  # pylint: disable=unused-argument
         """Gets called for all packets, including position.
         Count and print all packets for debugging and liveness monitoring."""
 
-        logging.debug(f"** FYI, generic packet from: {packet['fromId']}")
+        logger.debug(f"** FYI, generic packet from: {packet['fromId']}")
         #if packet.get('decoded'):
         #    decoded = packet['decoded']
         #    decoded_only = {x: decoded[x] for x in decoded if x != 'raw'}
-        #    logging.debug(f"** Decoded packet: {decoded_only}")
+        #    logger.debug(f"** Decoded packet: {decoded_only}")
         self.packet_callback_counter.inc()
 
     def inject_position(self, icao, lat, lon, alt):
@@ -218,7 +220,7 @@ class MeshReceiver:
         ret2 = self.readsb.inject(sentence1, sentence2)  # send twice to force tar1090 rendering
         if ret1 + ret2:
             self.inject_fail_counter.inc()
-            logging.error("Failed to send position to readsb")
+            logger.error("Failed to send position to readsb")
         return ret1 + ret2
 
     def build_test_packet(self):
@@ -244,7 +246,7 @@ class MeshReceiver:
         share_end = int(self.icao_dict['icao_share_end'], 16)
         pack['fromId'] = share_start + loc.unit_no
         if pack['fromId'] > share_end:
-            logging.error("Error: unit_no exceeds icao_end")
+            logger.error("Error: unit_no exceeds icao_end")
             pack['fromId'] = share_end
         pack['fromId'] = hex(pack['fromId'])
 
@@ -280,7 +282,7 @@ class LocationShareInputThread:     # pylint: disable=too-few-public-methods
         while True:
             loc = self.location_receiver.receive_location()     # blocks
             if loc:
-                logging.info(f"Received shared location: {loc.to_json()}")
+                logger.info(f"Received shared location: {loc.to_json()}")
                 self.shared_location_q.put(loc)
                 self.shared_locations_in_counter.inc()
             else:
@@ -310,7 +312,7 @@ if __name__ == '__main__':
     start_http_server(PROM_PORT)     # prometheus metrics
 
     print("running")
-    logging.info("running")
+    logger.info("running")
 
     shared_location_queue = Queue()
     location_receive_thread = LocationShareInputThread(args.share_input_port,
@@ -324,14 +326,14 @@ if __name__ == '__main__':
         while True:
             # Handle loss of serial connection to mesh device
             if not hasattr(iface, "stream") or not iface.stream:
-                logging.warning("Attempting reconnect to meshtastic")
+                logger.warning("Attempting reconnect to meshtastic")
                 mesh_receiver.reconnect_counter.inc()
                 iface = meshtastic.serial_interface.SerialInterface()
 
             # Got a shared location over the IP network
             if shared_location_queue.qsize() > 0:
                 queue_loc = shared_location_queue.get()
-                logging.info(f"de-q shared location: {queue_loc.to_json()}")
+                logger.info(f"de-q shared location: {queue_loc.to_json()}")
                 shared_packet = mesh_receiver.build_packet_from_shared_location(queue_loc)
                 mesh_receiver.handle_position_packet(shared_packet, False)
 
