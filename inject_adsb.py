@@ -5,6 +5,7 @@ of two sentences.)
 import socket
 import argparse
 from prometheus_client import Counter
+import logging
 
 class ReadsbConnection:
     """This class open a socket to readsb and enables sending ADS-B
@@ -24,7 +25,7 @@ class ReadsbConnection:
         if host:
             self.connect()
         else:
-            print('No host specified, skipping connection')
+            logging.error('No host specified, skipping connection')
 
     def connect(self):
         """Open connection, return 0 on success, -1 on failure."""
@@ -32,16 +33,16 @@ class ReadsbConnection:
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((self.host, self.port))
-            print('connected')
+            logging.info('connected to readsb')
             return 0
         except Exception as e:    # pylint: disable=broad-except
-            print(f'Error connecting: {e}')
+            logging.error(f'Error connecting to readsb: {e}')
         return -1
 
     def close(self):
         """Close the connection."""
         self.sock.close()
-        print('closed connection')
+        logging.info('closed readsb connection')
         self.sock = None
 
     def send(self, message):
@@ -49,10 +50,10 @@ class ReadsbConnection:
         self.send_counter.inc()
         try:
             self.sock.send(message)
-            print('sent command')
+            logging.info('sent readsb message')
         except Exception as e:    # pylint: disable=broad-except
             self.send_error_counter.inc()
-            print(f'Error sending message: {e}')
+            logging.info(f'Error sending readsb message: {e}')
             return -1
         return 0
 
@@ -60,7 +61,7 @@ class ReadsbConnection:
         """Send a message to the server, reconnect if necessary, 
         return 0 on success, -1 on failure."""
         if self.send(message):
-            print('reconnecting')
+            logging.info('readsb reconnecting')
             if self.connect():
                 return -1
             return self.send(message)
@@ -74,7 +75,7 @@ class ReadsbConnection:
 
         fail = self.send_and_retry(message.encode())
         if fail:
-            print('failed to send message')
+            logging.error('failed to send message')
             return -1
         return 0
 

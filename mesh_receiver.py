@@ -310,7 +310,7 @@ if __name__ == '__main__':
 
     start_http_server(PROM_PORT)     # prometheus metrics
 
-    print("running")
+    logging.info("running")
 
     shared_location_queue = Queue()
     location_receive_thread = LocationShareInputThread(args.share_input_port,
