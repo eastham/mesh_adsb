@@ -33,8 +33,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)s adsb_actions %(module)s:%(lineno)d: %(message)s',
     datefmt='%Y-%m-%dT%H:%M:%S',
     handlers=[
-        logging.StreamHandler(),
-        logging.handlers.SysLogHandler()
+        logging.StreamHandler()
     ])
 
 class MeshReceiver:
@@ -310,6 +309,7 @@ if __name__ == '__main__':
 
     start_http_server(PROM_PORT)     # prometheus metrics
 
+    print("running")
     logging.info("running")
 
     shared_location_queue = Queue()
