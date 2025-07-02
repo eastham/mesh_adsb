@@ -7,10 +7,7 @@ import json
 import time
 from typing import List
 
-logging.basicConfig()
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-logger.debug("Logging is set up.")
 
 class TrackerStatus:
     def __init__(self, mesh_id: str, name: str, last_seen: int, shared_with_us: bool):

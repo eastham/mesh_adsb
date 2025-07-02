@@ -31,11 +31,8 @@ log_level = logging.INFO
 logging.basicConfig(
     level=log_level,
     format='%(asctime)s %(levelname)s adsb_actions %(module)s:%(lineno)d: %(message)s',
-    datefmt='%Y-%m-%dT%H:%M:%S',
-    handlers=[
-        logging.StreamHandler(),
-        logging.handlers.SysLogHandler()
-    ])
+    datefmt='%Y-%m-%dT%H:%M:%S'
+)
 logger = logging.getLogger(__name__)
 
 class MeshReceiver:
@@ -290,6 +287,7 @@ class LocationShareInputThread:     # pylint: disable=too-few-public-methods
             time.sleep(1)
 
 if __name__ == '__main__':
+    logger.info("starting")
     parser = argparse.ArgumentParser(description='Mesh Receiver.')
     parser.add_argument('--host', help='The readsb host to connect to.',
                         required=True)
