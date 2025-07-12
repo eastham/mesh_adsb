@@ -7,20 +7,22 @@
 "icao_share_start": ADF814    # start of range for IP-shared positions
 "icao_share_end": ADF8FF      # end of reserved range
 
-"!4dc1acfe": ADF800   # airport_HP
-"!43563b18": ADF801   # airport_crew
-"!33677aa0": ADF802   # airport_1
-"!da63a7a4": ADF803   # airport_2
-"!33677aec": ADF804   # airport_3
-"!fbe6433c": ADF805   # airport_4 
-"!5bf6d0f0": ADF806   # airport_5
-"!365aed45": ADF807   # airport_6
+"!4dc1acfe": ADF800   # airport_HP, N10CE
+"!43563b18": ADF801   # airport_crew, N10CF
+"!33677aa0": ADF802   # airport_1, N10CG
+"!da63a7a4": ADF803   # airport_2, N10CH
+"!33677aec": ADF804   # airport_3, N10CJ
+"!fbe6433c": ADF805   # airport_4, N10CK
+"!5bf6d0f0": ADF806   # airport_5, N10CL 
+"!365aed45": ADF807   # airport_6, N10CM
 #"!33676d00": ADF806   # home rooftop
 "!unassigned2": ADF807 # unassigned
-#"!da628bcc": ADF808   # tower interior
-#"!da628454": ADF809   # tower exterior
+#"!da628bcc": ADF808   # tower interior, N10CN
+#"!da628454": ADF809   # tower exteriorm, N10CP
 "!43572234": ADF80A   # 0A-13 are non-adsb aircraft: "NONADSB_1"
                       # (above 13 are other types of objects)
+                      # 0A: N10CQ 0B: N10CR ... 13: N10D
+                      # all but N10D will by treated as aircraft by op_pusher
 # da628bcc = tower
 
 
