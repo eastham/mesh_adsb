@@ -1,45 +1,44 @@
-# List of mappings from meshtastic IDs to fake ICAO addresses for 
-# rendering in tar1090
-# Our instance of tar1090 has a reserved range of 0xadf800 - 0xadf8ff and will 
-# render those ICAOs as truck icons.
+# Configuration file for mapping Meshtastic device IDs to ICAO addresses
+#
+# This file maps Meshtastic device IDs (format: !xxxxxxxx) to ICAO addresses
+# for rendering in tar1090. Replace the example values below with your actual
+# Meshtastic device IDs and desired ICAO addresses.
+#
+# ICAO Address Ranges:
+# - You can use any ICAO address range that doesn't conflict with real aircraft
+# - Example range: 0xADF800 - 0xADF8FF (256 addresses)
+# - Configure your tar1090 instance to render these addresses with custom icons
 
-"icao_start": ADF800          # start of reserved range
-"icao_share_start": ADF814    # start of range for IP-shared positions
-"icao_share_end": ADF8FF      # end of reserved range
+"icao_start": ADF800          # Start of your reserved ICAO range
+"icao_share_start": ADF814    # Start of range for IP-shared positions from remote instances
+"icao_share_end": ADF8FF      # End of reserved range
 
-"!4dc1acfe": ADF800   # airport_HP, N10CE
-"!43563b18": ADF801   # airport_crew, N10CF
-"!33677aa0": ADF802   # airport_1, N10CG
-"!da63a7a4": ADF803   # airport_2, N10CH
-"!33677aec": ADF804   # airport_3, N10CJ
-"!fbe6433c": ADF805   # airport_4, N10CK
-"!5bf6d0f0": ADF806   # airport_5, N10CL 
-"!365aed45": ADF807   # airport_6, N10CM
-#"!33676d00": ADF806   # home rooftop
-"!unassigned2": ADF807 # unassigned
-#"!da628bcc": ADF808   # tower interior, N10CN
-#"!da628454": ADF809   # tower exteriorm, N10CP
-"!43572234": ADF80A   # 0A-13 are non-adsb aircraft: "NONADSB_1"
-                      # (above 13 are other types of objects)
-                      # 0A: N10CQ 0B: N10CR ... 13: N10D
-                      # all but N10D will by treated as aircraft by op_pusher
-# da628bcc = tower
+# Device ID to ICAO mappings
+# Format: "!<meshtastic_id>": <ICAO_address>  # optional comment with device name and N-number
+"!abc12345": ADF800   # Example: Vehicle 1, N10CE
+"!abc12346": ADF801   # Example: Vehicle 2, N10CF
+"!abc12347": ADF802   # Example: Vehicle 3, N10CG
+"!abc12348": ADF803   # Example: Vehicle 4, N10CH
+"!abc12349": ADF804   # Example: Vehicle 5, N10CJ
+"!abc1234a": ADF805   # Example: Vehicle 6, N10CK
+"!abc1234b": ADF806   # Example: Vehicle 7, N10CL
+"!abc1234c": ADF807   # Example: Vehicle 8, N10CM
+"!abc1234d": ADF80A   # Example: Aircraft 1, N10CQ
 
+# Human-readable names for ICAO addresses (used in logging)
+# Format: '<ICAO_address>': "name"
+'0xadf800': "Vehicle 1"   # N10CE
+'0xadf801': "Vehicle 2"   # N10CF
+'0xadf802': "Vehicle 3"   # N10CG
+'0xadf803': "Vehicle 4"   # N10CH
+'0xadf804': "Vehicle 5"   # N10CJ
+'0xadf805': "Vehicle 6"   # N10CK
+'0xadf806': "Vehicle 7"   # N10CL
+'0xadf807': "Vehicle 8"   # N10CM
+'0xadf80a': "Aircraft 1"  # N10CQ
 
-# these human-readable aliases from ICAO are used for logging /debugging purposes
-'0xadf800': "airport_HP"   
-'0xadf801': "airport_crew"
-'0xadf802': "airport_1"
-'0xadf803': "airport_2"
-'0xadf804': "airport_3"
-'0xadf805': "airport_4"
-'0xadf806': "airport_5"
-'0xadf807': "airport_6"
+# Default altitude in feet MSL to use when not specified in position packet
+"default_alt": 3900
 
-'0xadf809': "airport tower"
-'0xadf80a': "airport_ac1"
-
-
-# comment this line out if you don't want to render all unknown IDs
-#"default": ADF8FF     # used for unrecognized mesh id's
-"default_alt": 3900   # altitude MSL to use if not specified in the packet
+# Optional: Uncomment to assign a default ICAO address for unrecognized device IDs
+#"default": ADF8FF

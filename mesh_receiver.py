@@ -1,9 +1,6 @@
 """
 Subscribe to meshtastic position messages coming in on USB, 
 and inject them into a readsb instance.
-
-TODO: 
-tar1090 display persists for 40s after packet received, too short?
 """
 
 import sys
@@ -304,12 +301,11 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if (args.share_output_ip and not args.share_output_port) or \
             (args.share_output_port and not args.share_output_ip):
-        print("Error: Must specify both share_output_ip and share_output_port")
+        logger.error("Must specify both share_output_ip and share_output_port")
         sys.exit(1)
 
     start_http_server(PROM_PORT)     # prometheus metrics
 
-    print("running")
     logger.info("running")
 
     shared_location_queue = Queue()
@@ -341,5 +337,5 @@ if __name__ == '__main__':
 
             time.sleep(1)
     except Exception as e:  # pylint: disable=broad-except
-        print(f"Error: Connection problem: {e}")
+        logger.error(f"Connection problem: {e}")
         sys.exit(1)

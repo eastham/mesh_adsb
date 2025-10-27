@@ -91,9 +91,10 @@ class LocationSender:
         return 0
 
 class LocationReceiver:
+    """Class for receiving LocationShare objects."""
+
     def __init__(self, ip: str, port: int, ip_whitelist: list = None):
-        """Class for receiving LocationShare objects.
-        
+        """
         ip: IP address to bind to
         port: Port to bind to
         ip_whitelist: List of IP addresses to accept data from. 
@@ -130,6 +131,10 @@ class LocationReceiver:
             return None
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
     parser = argparse.ArgumentParser(description='Location Share')
     parser.add_argument('--port', type=int, default=8869,
                         help='The port to listen on.')
@@ -146,14 +151,13 @@ if __name__ == "__main__":
         test_loc = LocationShare(40.761324, -119.212513, 4000, ts,
                                  "AIRPORT_TEST", 2, "Airport Truck #3")
         sender.send_location(test_loc)
-        print(f"Sent test location to {args.send_test_ip}, exiting: ",
-              f"{test_loc.to_json()}")
+        logger.info(f"Sent test location to {args.send_test_ip}, exiting: {test_loc.to_json()}")
         sys.exit(0)
 
     # Listen for data and print it to stdout
-    print(f"Listening for shared locations on port {args.port}")
+    logger.info(f"Listening for shared locations on port {args.port}")
     receiver = LocationReceiver("0.0.0.0", args.port, None)
     while True:
         received_loc = receiver.receive_location()
         if received_loc is not None:
-            print("Received shared location: " + received_loc.to_json())
+            logger.info(f"Received shared location: {received_loc.to_json()}")

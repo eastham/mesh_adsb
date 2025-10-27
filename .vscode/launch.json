@@ -10,9 +10,7 @@
           "request": "launch",
           "program": "mesh_receiver.py",
           "console": "integratedTerminal",
-          //"args": "--host=192.168.87.28 --test"
-          "args": "--host=192.168.87.56 --share_output_ip=localhost --share_output_port=6666 --share_input_port=8869"
-          //"args": "--host=192.168.87.23"
+          "args": "--host=monitor --share_output_ip=localhost --share_output_port=6666 --share_input_port=8869"
         }, 
 
        {
@@ -22,7 +20,6 @@
           "program": "location_share.py",
           "console": "integratedTerminal",
           "args": ""
-          //"args": "--host=192.168.87.23"
         },
         {
           "name": "position share send test",
@@ -32,7 +29,6 @@
           "console": "integratedTerminal",
           "args": "--send_test_ip=monitor --send_test_port=8869"
           //"args": "--send_test_ip=localhost --send_test_port=8869"
-          //"args": "--host=192.168.87.23"
         }
     ]
 }

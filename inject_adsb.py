@@ -72,7 +72,6 @@ class ReadsbConnection:
         """Format and send an ADS-B command to readsb."""
         message = f"*{arg1};\n*{arg2};\n"
         message = message.upper()
-        # print(f"message: {message}")
 
         fail = self.send_and_retry(message.encode())
         if fail:
